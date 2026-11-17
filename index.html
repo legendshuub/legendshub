@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="uz"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Legendshub.uz</title>
+<style>
+:root{--bg:#0d0f14;--card:#171a22;--tx:#eef0f5;--mu:#98a0b3;--ac:#ff3d5a;--ac2:#18d6ff;--gold:#ffc83d;--bd:#262b38}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{position:sticky;top:0;z-index:5;background:#0d0f14ee;backdrop-filter:blur(8px);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px;padding:10px 14px;flex-wrap:wrap}
+.logo{font-weight:800;font-size:20px;color:var(--tx);text-decoration:none}.logo b{color:var(--ac)}
+nav{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+nav a{color:var(--mu);text-decoration:none;padding:6px 12px;border-radius:99px;font-size:14px;cursor:pointer}
+nav a.on{background:var(--ac);color:#fff}
+main{max-width:720px;margin:0 auto;padding:14px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:14px;margin-bottom:14px}
+.car{position:relative;border-radius:18px;overflow:hidden;height:220px;background:#10131a;border:1px solid var(--bd);margin-bottom:14px}
+.sl{position:absolute;inset:0;opacity:0;transition:opacity .8s;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.sl.on{opacity:1}.sl svg{width:88%;max-height:150px}
+.sl img,.sl video{width:100%;height:100%;object-fit:cover}
+.sl span{position:absolute;bottom:26px;left:12px;font-weight:700;text-shadow:0 0 8px #000,0 0 14px #000}
+.dots{position:absolute;bottom:8px;left:0;right:0;display:flex;justify-content:center;gap:6px}
+.dots i{width:8px;height:8px;border-radius:50%;background:#777}.dots i.on{background:var(--ac)}
+input,textarea{width:100%;font:inherit;background:#0d0f14;color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:10px;margin-bottom:8px}
+button{font:inherit;background:var(--ac);color:#fff;border:0;border-radius:10px;padding:9px 16px;font-weight:600;cursor:pointer}
+button.g{background:transparent;color:var(--mu);border:1px solid var(--bd)}
+button.l.on{color:var(--ac);border-color:var(--ac)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.mu{color:var(--mu);font-size:14px}.pn{font-weight:700}
+.av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--ac),var(--ac2));display:grid;place-items:center;font-weight:800;color:#fff;flex:none}
+.cm{border-top:1px solid var(--bd);padding:6px 0;font-size:15px}
+.pimg{width:100%;border-radius:12px;margin-top:8px;max-height:420px;object-fit:cover;background:#000}
+.bar{height:8px;background:#0d0f14;border-radius:9px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac2)}
+.pre{border-color:var(--gold)}.gold{color:var(--gold)}
+.home{position:fixed;right:14px;bottom:14px;z-index:6;border-radius:99px;padding:12px 16px;box-shadow:0 4px 16px #000a}
+.mem{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.mem button{height:64px;font-size:28px;background:#0d0f14;border:1px solid var(--bd)}
+.opt{display:block;width:100%;text-align:left;margin-bottom:6px;background:#0d0f14;border:1px solid var(--bd)}
+h2{margin:6px 0 10px}
+</style></head><body>
+<header><a class="logo" href="#home">Legends<b>hub</b>.uz</a>
+<nav><a href="#home" id="n-home">Bosh sahifa</a><a href="#profil" id="n-profil">Profil</a><a href="#premium" id="n-premium">⭐ Premium</a><a id="n-out" style="display:none">Chiqish</a></nav></header>
+<main id="app"><div class="card mu">Yuklanmoqda…</div></main>
+<button class="home" id="hb" style="display:none" onclick="location.hash='home'">🏠 Bosh sahifa</button>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+// ====== SHU IKKI QATORNI O'ZGARTIRING (Supabase > Project Settings > API) ======
+const SB_URL='https://akdapgvdwymhcuvylwgd.supabase.co', SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFrZGFwZ3Zkd3ltaGN1dnlsd2dkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ4Mzk2NjksImV4cCI6MjExMDQxNTY2OX0.C07Meujw10kZ8zFqSSf70dS-5kTy-4SPJYT_azXZbWg';
+// ================================================================================
+const sb=supabase.createClient(SB_URL,SB_KEY);
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const week=Math.floor(Date.now()/604800000);
+let me=null,stats={p:0,c:0,l:0},busy=false;
+const colors=['#ff3d5a','#18d6ff','#ffc83d','#9b5cff','#2ee59d'];
+const carSvg=c=>`<svg viewBox="0 0 300 110"><ellipse cx="150" cy="98" rx="120" ry="7" fill="${c}" opacity=".4"/><path d="M28 80 L40 60 Q52 54 88 52 L112 32 Q130 26 170 28 L206 34 Q226 50 262 56 L276 70 L276 82 L28 82Z" fill="${c}"/><path d="M118 38 L112 52 L168 52 L166 34Z M176 34 L178 52 L214 52 L196 36Z" fill="#0d0f14" opacity=".85"/><circle cx="78" cy="84" r="17" fill="#0a0a0d" stroke="#ccc" stroke-width="4"/><circle cx="228" cy="84" r="17" fill="#0a0a0d" stroke="#ccc" stroke-width="4"/><rect x="256" y="62" width="16" height="6" rx="3" fill="#fff"/></svg>`;
+const q=async p=>{const r=await p;if(r.error)throw new Error(r.error.message);return r.data||[]};
+const isPrem=()=>stats.p>=3&&stats.c>=5&&stats.l>=5;
+const cnt=async(t)=>(await sb.from(t).select('*',{count:'exact',head:true}).eq('user_id',me.id)).count||0;
+async function loadStats(){stats=me?{p:await cnt('posts'),c:await cnt('comments'),l:await cnt('likes')}:{p:0,c:0,l:0}}
+function carousel(items){
+ const sl=items.length?items.map(p=>`<div class="sl">${p.media_type==='video'?`<video src="${esc(p.image_url)}" muted loop autoplay playsinline></video>`:`<img src="${esc(p.image_url)}" alt="">`}<span>${esc(p.car)}</span></div>`):colors.map((c,i)=>`<div class="sl">${carSvg(c)}</div>`);
+ return `<div class="car">${sl.join('').replace('class="sl"','class="sl on"')}<div class="dots">${sl.map((_,i)=>`<i class="${i?'':'on'}"></i>`).join('')}</div></div>`}
+let ci=0,ct;function startCar(){clearInterval(ct);ci=0;ct=setInterval(()=>{const s=document.querySelectorAll('.sl'),d=document.querySelectorAll('.dots i');if(s.length<2)return;s[ci].classList.remove('on');d[ci].classList.remove('on');ci=(ci+1)%s.length;s[ci].classList.add('on');d[ci].classList.add('on')},3500)}
+function postHtml(p){
+ const liked=me&&p.likes.some(x=>x.user_id===me.id),cm=[...p.comments].sort((a,b)=>a.created_at<b.created_at?-1:1),nick=p.profiles?.nick||'Haydovchi';
+ return `<div class="card"><div class="row"><div class="av">${esc(nick[0]).toUpperCase()}</div><div><div class="pn">${esc(nick)}</div><div class="mu">${new Date(p.created_at).toLocaleString('uz')}</div></div></div>
+ <h3 style="margin:10px 0 2px">🚗 ${esc(p.car)}</h3><div>${esc(p.body)}</div>${p.image_url?(p.media_type==='video'?`<video class="pimg" src="${esc(p.image_url)}" controls playsinline preload="metadata"></video>`:`<img class="pimg" src="${esc(p.image_url)}" loading="lazy" alt="">`):''}
+ <div class="row" style="margin:10px 0"><button class="g l ${liked?'on':''}" data-like="${p.id}">${liked?'❤️':'🤍'} ${p.likes.length}</button><span class="mu">👁 ${p.views.length} ko‘rish · 💬 ${cm.length}</span>${me&&p.user_id===me.id?`<button class="g" data-del="${p.id}" style="margin-left:auto">🗑</button>`:''}</div>
+ ${cm.map(c=>`<div class="cm"><b>${esc(c.profiles?.nick||'Haydovchi')}:</b> ${esc(c.body)}</div>`).join('')}
+ ${me?`<div class="row" style="margin-top:8px"><input style="flex:1;margin:0" id="c-${p.id}" placeholder="Izoh yozing…" maxlength="300"><button data-cm="${p.id}">Yuborish</button></div>`:''}</div>`}
+const SEL='*,profiles(nick),likes(user_id),views(user_id),comments(id,user_id,body,created_at,profiles(nick))';
+function authBox(){return `<div class="card"><h2>Kirish / Ro‘yxatdan o‘tish</h2><input id="em" type="email" placeholder="Email"><input id="pw" type="password" placeholder="Parol (kamida 6 belgi)"><input id="nk" placeholder="Taxallus (ro‘yxatdan o‘tishda)" maxlength="24"><div class="row"><button id="li">Kirish</button><button class="g" id="su">Ro‘yxatdan o‘tish</button></div><div class="mu" id="am" style="margin-top:8px"></div></div>`}
+async function home(){
+ const posts=await q(sb.from('posts').select(SEL).order('created_at',{ascending:false}).limit(50));
+ if(me)for(const p of posts)if(!p.views.some(v=>v.user_id===me.id)){sb.from('views').upsert({post_id:p.id,user_id:me.id},{onConflict:'post_id,user_id',ignoreDuplicates:true});p.views.push({user_id:me.id})}
+ const form=me?`<div class="card"><h2>Yangi post</h2><input id="pc" placeholder="Avtomobil nomi (masalan: Nexia 3 tuning)" maxlength="60"><textarea id="pt" rows="2" placeholder="Tuning haqida yozing…" maxlength="400"></textarea><input id="pf" type="file" accept="image/*,video/*"><div class="mu" style="margin:-4px 0 8px">Rasm yoki video (video 50 MB gacha)</div><button id="pb">Joylash</button><span class="mu" id="pm"></span></div>`:authBox();
+ return carousel(posts.filter(p=>p.image_url).slice(0,5))+form+(posts.map(postHtml).join('')||'<div class="card mu">Hali postlar yo‘q. Birinchi bo‘lib joylang!</div>')}
+async function profil(){
+ if(!me)return authBox();
+ const {data:p}=await sb.from('profiles').select('*').eq('id',me.id).single();
+ const posts=await q(sb.from('posts').select(SEL).eq('user_id',me.id).order('created_at',{ascending:false}));
+ return `<div class="card"><h2>Mening profilim ${isPrem()?'<span class="gold">⭐ Premium</span>':''}</h2><div class="mu" style="margin-bottom:8px">${esc(me.email)}</div><input id="nick" placeholder="Taxallus" maxlength="24" value="${esc(p?.nick)}"><textarea id="bio" rows="2" placeholder="O‘zingiz haqingizda…" maxlength="200">${esc(p?.bio)}</textarea><button id="sp">Saqlash</button></div>
+ <div class="card"><div class="row" style="justify-content:space-around;text-align:center"><div><div class="pn">${stats.p}</div><div class="mu">Post</div></div><div><div class="pn">${stats.c}</div><div class="mu">Izoh</div></div><div><div class="pn">${stats.l}</div><div class="mu">Like</div></div></div></div><h2>Mening postlarim</h2>`+(posts.map(postHtml).join('')||'<div class="card mu">Postlar yo‘q.</div>')}
+const Q=[['Qaysi mashina “Tokio drift” filmida mashhur?','Nissan Silvia',['Nissan Silvia','Lada','Matiz']],['Turbo nimaga xizmat qiladi?','Quvvatni oshirish',['Quvvatni oshirish','Radio','Salon isitish']],['Stance tuningda nima asosiy?','Pasaytirilgan kuzov',['Baland kuzov','Pasaytirilgan kuzov','Yuk tashish']],['“JDM” nimani anglatadi?','Yaponiya ichki bozori',['Yaponiya ichki bozori','Janubiy Dubay','Juda tez']],['Spoyler vazifasi?','Aerodinamika',['Aerodinamika','Yoqilg‘i tejash','Musiqa']],['Neon yoritish qayerda ishlatiladi?','Kuzov ostida',['Motorda','Kuzov ostida','Bagajda']],['Intercooler nimani sovutadi?','Havoni',['Havoni','Yog‘ni','Haydovchini']],['Kardan qaysi qismga tegishli?','Transmissiya',['Transmissiya','Salon','Chiroq']],['Alloy disk nimadan?','Yengil qotishma',['Yengil qotishma','Yog‘och','Rezina']]];
+async function premium(){
+ if(!me)return authBox();
+ const pr=isPrem(),cond=[['Kamida 3 ta post joylang',stats.p,3],['5 ta izoh qoldiring',stats.c,5],['5 ta postga like bosing',stats.l,5]];
+ let h=`<div class="card pre"><h2 class="gold">⭐ Premium versiya</h2><div class="mu" style="margin-bottom:10px">Shartlarni bajaring: premium avtomatik ochiladi.</div>${cond.map(([t,v,n])=>`<div style="margin:8px 0">${v>=n?'✅':'⬜'} ${t} <span class="mu">(${Math.min(v,n)}/${n})</span><div class="bar"><i style="width:${Math.min(100,v/n*100)}%"></i></div></div>`).join('')}</div>`;
+ if(!pr)return h;
+ const sc=await q(sb.from('scores').select('user_id,pts,profiles(nick)').eq('week',week).order('pts',{ascending:false}).limit(5));
+ const mine=sc.find(x=>x.user_id===me.id)||(await sb.from('scores').select('pts').eq('week',week).eq('user_id',me.id).maybeSingle()).data;
+ const t=['🧠 Avto viktorina','🃏 Xotira o‘yini','🎯 Sonni top'][week%3];
+ h+=`<div class="card pre"><h2>Bu haftaning o‘yini: ${t}</h2><div class="mu">O‘yin har hafta avtomatik almashadi. Haftada bir marta o‘ynaladi.</div><div id="game" style="margin-top:10px">${mine?`<b>Siz bu hafta ${mine.pts} ball oldingiz! Keyingi o‘yin dushanba kuni.</b>`:''}</div></div>`;
+ return h+`<div class="card"><h2>🏆 Haftalik reyting</h2>${sc.map((x,i)=>`<div class="cm">${i+1}. ${esc(x.profiles?.nick)} — <b>${x.pts}</b> ball</div>`).join('')||'<span class="mu">Hali natija yo‘q.</span>'}</div>`+(mine?'':'<!--play-->')}
+async function save(pts){const {error}=await sb.from('scores').insert({user_id:me.id,week,pts});if(error)alert('Ball saqlanmadi: '+error.message)}
+function game(){
+ const el=$('#game');if(!el)return;const g=week%3;
+ if(g===0){const qs=[0,1,2].map(i=>Q[(week*3+i)%Q.length]);let i=0,s=0;const r=()=>{if(i>=3){el.innerHTML=`<b>Natija: ${s*10} ball</b>`;save(s*10);return}const q=qs[i];el.innerHTML=`<div class="pn" style="margin-bottom:8px">${i+1}/3. ${q[0]}</div>`+q[2].map((o,k)=>`<button class="opt" data-k="${k}">${o}</button>`).join('');el.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{if(q[2][b.dataset.k]===q[1])s++;i++;r()})};r()}
+ else if(g===1){const em=['🚗','🏎️','🛞','⛽','🔧','🚦','🏁','🔥'];const seed=(week*7)%8;const a=[...em,...em].map((e,i)=>[e,(i*5+seed)%16]).sort((x,y)=>x[1]-y[1]).map(x=>x[0]);let op=[],ok=0,mv=0,lock=false;el.innerHTML=`<div class="mem">${a.map((_,i)=>`<button data-i="${i}">❓</button>`).join('')}</div><div class="mu" id="mv" style="margin-top:8px">Yurishlar: 0</div>`;const bs=el.querySelectorAll('.mem button');
+  bs.forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(lock||op.includes(i)||b.disabled)return;b.textContent=a[i];op.push(i);if(op.length===2){mv++;$('#mv').textContent='Yurishlar: '+mv;lock=true;const[x,y]=op;if(a[x]===a[y]){bs[x].disabled=bs[y].disabled=true;ok++;op=[];lock=false;if(ok===8){const p=Math.max(10,100-(mv-8)*5);el.innerHTML=`<b>Natija: ${p} ball</b>`;save(p)}}else setTimeout(()=>{bs[x].textContent=bs[y].textContent='❓';op=[];lock=false},700)}})}
+ else{const n=((week*37)%20)+1;let t=5;el.innerHTML=`<div class="mu">1 dan 20 gacha son o‘yladim. 5 ta urinish.</div><div class="row" style="margin-top:8px"><input id="gi" type="number" min="1" max="20" style="flex:1;margin:0"><button id="gb">Taxmin</button></div><div id="gm" style="margin-top:8px"></div>`;
+  $('#gb').onclick=()=>{const v=+$('#gi').value;if(!v)return;t--;if(v===n){const p=(t+1)*20;el.innerHTML=`<b>To‘g‘ri! ${p} ball</b>`;save(p)}else if(t===0){el.innerHTML='<b>Yutqazdingiz: 5 ball</b>';save(5)}else $('#gm').textContent=(v<n?'Kattaroq son. ':'Kichikroq son. ')+t+' urinish qoldi'}}}
+async function render(){
+ if(busy)return;busy=true;
+ try{
+  const h=(location.hash||'#home').slice(1),v=['home','profil','premium'].includes(h)?h:'home';
+  ['home','profil','premium'].forEach(k=>$('#n-'+k).classList.toggle('on',k===v));$('#hb').style.display=v==='home'?'none':'block';$('#n-out').style.display=me?'':'none';
+  await loadStats();
+  $('#app').innerHTML=await({home,profil,premium}[v])();
+  if(v==='home')startCar();
+  if(v==='premium'&&$('#game')&&!$('#game').innerHTML.trim())game();
+ }catch(e){$('#app').innerHTML='<div class="card">Xatolik: '+esc(e.message)+'<br><span class="mu">Supabase URL va kalit to‘g‘ri kiritilganini tekshiring.</span></div>'}
+ busy=false}
+async function act(fn){try{await fn()}catch(e){alert(e.message)}await render()}
+document.addEventListener('click',e=>{
+ const t=e.target,d=t.dataset||{};
+ if(t.id==='n-out')return act(()=>sb.auth.signOut().then(()=>{me=null}));
+ if(t.id==='li')return act(async()=>{const {data,error}=await sb.auth.signInWithPassword({email:$('#em').value,password:$('#pw').value});if(error)throw error;me=data.user});
+ if(t.id==='su')return act(async()=>{const {data,error}=await sb.auth.signUp({email:$('#em').value,password:$('#pw').value,options:{data:{nick:$('#nk').value.trim()}}});if(error)throw error;if(data.session)me=data.user;else alert('Emailingizga tasdiqlash xati yuborildi.')});
+ if(!me)return;
+ if(t.id==='pb')return act(async()=>{const car=$('#pc').value.trim();if(!car)return;let image_url=null,media_type='image';const f=$('#pf').files[0];
+  if(f){const isV=f.type.startsWith('video');if(!isV&&!f.type.startsWith('image'))throw new Error('Faqat rasm yoki video yuklang');if(f.size>50*1024*1024)throw new Error('Fayl 50 MB dan katta');media_type=isV?'video':'image';$('#pm').textContent=' Yuklanmoqda…';const path=me.id+'/'+Date.now()+'.'+(f.name.split('.').pop()||'jpg');const {error}=await sb.storage.from('cars').upload(path,f,{contentType:f.type});if(error)throw error;image_url=sb.storage.from('cars').getPublicUrl(path).data.publicUrl}
+  const {error}=await sb.from('posts').insert({user_id:me.id,car,body:$('#pt').value.trim(),image_url,media_type});if(error)throw error});
+ if(d.like)return act(async()=>{const l=(await sb.from('likes').select('post_id').eq('post_id',d.like).eq('user_id',me.id)).data;if(l.length)await sb.from('likes').delete().eq('post_id',d.like).eq('user_id',me.id);else await sb.from('likes').insert({post_id:d.like,user_id:me.id})});
+ if(d.cm)return act(async()=>{const b=$('#c-'+d.cm).value.trim();if(!b)return;const {error}=await sb.from('comments').insert({post_id:d.cm,user_id:me.id,body:b});if(error)throw error});
+ if(d.del&&confirm('Postni o‘chirasizmi?'))return act(()=>sb.from('posts').delete().eq('id',d.del));
+ if(t.id==='sp')return act(async()=>{const {error}=await sb.from('profiles').update({nick:$('#nick').value.trim()||'Haydovchi',bio:$('#bio').value.trim()}).eq('id',me.id);if(error)throw error});
+});
+window.addEventListener('hashchange',render);
+sb.auth.getSession().then(({data})=>{me=data.session?.user||null;render()});
+</script></body></html>
